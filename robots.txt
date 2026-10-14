@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ivoireaquaculture.github.io/site/sitemap.xml

@@ -6,6 +6,21 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
+  /* Mesure d'audience (GoatCounter) : événements sans donnée personnelle */
+  function track(path, title) {
+    try {
+      if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: path, title: title || path, event: true });
+    } catch (err) { /* statistiques indisponibles : sans effet sur le site */ }
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var h = a.getAttribute('href');
+    if (h.indexOf('wa.me/') !== -1 && !a.hasAttribute('data-wa-send')) track('clic-whatsapp', 'Clic WhatsApp');
+    else if (h.indexOf('tel:') === 0) track('clic-appel-' + h.replace(/\D/g, '').slice(-10), 'Clic appel ' + h.slice(4));
+    else if (h.indexOf('mailto:') === 0) track('clic-email', 'Clic e-mail');
+  });
+
   /* Menu mobile */
   var burger = $('#burger');
   var nav = $('#nav');
@@ -116,7 +131,13 @@
         firstBad.focus();
         return;
       }
-      /* Version statique (aperçu) : pas de serveur, la demande part sur WhatsApp. */
+      /* Statistiques : une demande valide est comptée (type + produit), sans donnée personnelle. */
+      var kind = form.getAttribute('data-form');
+      var prodSel = $('#f-product', form) || $('#f-tier', form);
+      var prodLabel = prodSel && prodSel.value ? prodSel.options[prodSel.selectedIndex].text : '';
+      track('formulaire-' + kind + (prodSel && prodSel.value ? '-' + prodSel.value : ''), 'Formulaire ' + kind + (prodLabel ? ' : ' + prodLabel : ''));
+
+      /* Version statique : pas de serveur, la demande part sur WhatsApp. */
       if (document.body.hasAttribute('data-static')) {
         e.preventDefault();
         var lines = [];
@@ -144,6 +165,8 @@
           form.appendChild(link);
         }
         link.href = href;
+        var win = null;
+        try { win = window.open(href, '_blank', 'noopener'); } catch (err) { win = null; }
         link.focus();
       }
     });

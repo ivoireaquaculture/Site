@@ -499,3 +499,6 @@ body[data-static] .static-hint { display: block; }
 .gallery-note { margin-top: 18px; }
 .growth .growth-dot { color: #fff; font-size: .85rem; }
 .phone-line { display: flex; flex-direction: column; line-height: 1.3; } .phone-line small { font-weight: 500; color: var(--gray-500); font-size: .78rem; }
+
+.footer .foot-label { margin: 10px 0 2px; }
+.footer .foot-label:first-of-type { margin-top: 0; }
